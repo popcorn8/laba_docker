@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Flask App</h1>
+        
+        <form id="register-form" autocomplete="off">
+            <h2>Register</h2>
+            <label for="username">Username</label>
+            <input type="text" id="register-username" name="username" required autocomplete="off">
+            
+            <label for="password">Password</label>
+            <input type="password" id="register-password" name="password" required autocomplete="off">
+            
+            <button type="submit">Register</button>
+        </form>
+
+        <form id="login-form" autocomplete="off">
+            <h2>Login</h2>
+            <label for="username">Username</label>
+            <input type="text" id="login-username" name="username" required autocomplete="off">
+            
+            <label for="password">Password</label>
+            <input type="password" id="login-password" name="password" required autocomplete="off">
+            
+            <button type="submit">Login</button>
+        </form>
+
+        <!-- Modal for feedback -->
+        <div id="modal" class="hidden">
+            <div class="modal-content">
+                <p id="modal-message"></p>
+                <button onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Clear fields on page load
+            $('#register-username, #register-password, #login-username, #login-password').val('');
+            
+            $('#register-form').on('submit', function(e) {
+                e.preventDefault();
+                const formData = $(this).serialize();
+                $.post('/register', formData, function(response) {
+                    showModal(response.message);
+                    $('#register-form')[0].reset(); // Clear form
+                }).fail(function(xhr) {
+                    showModal(xhr.responseJSON.message);
+                });
+            });
+
+            $('#login-form').on('submit', function(e) {
+                e.preventDefault();
+                const formData = $(this).serialize();
+                $.post('/login', formData, function(response) {
+                    showModal(response.message);
+                    $('#login-form')[0].reset(); // Clear form
+                }).fail(function(xhr) {
+                    showModal(xhr.responseJSON.message);
+                });
+            });
+        });
+
+        function showModal(message) {
+            $('#modal-message').text(message);
+            $('#modal').removeClass('hidden');
+        }
+
+        function closeModal() {
+            $('#modal').addClass('hidden');
+        }
+    </script>
+
+    <style>
+        .hidden { display: none; }
+        .modal-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            z-index: 1000;
+        }
+    </style>
+</body>
+</html>
